@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+//import ExpenseItems from "./component/ExpenseItems";
+import React, { useState, useEffect } from "react";
+import Expenses from "./component/EXPENSE/Expenses";
+import NewExpense from "./component/NewExpence/NewExpense";
 
-function App() {
+let dummyItems = [];
+const App = () => {
+  const [Items, changeItems] = useState(dummyItems);
+
+    function fetchData (){
+      fetch("http://localhost:5000/getExpense")
+      .then((respose) => {
+        return respose.json();
+      })
+      .then((data) => {
+        console.log(data);
+        changeItems(data.msg);
+      })
+      .catch((err) => {
+        return err;
+      });
+    }
+  useEffect(() => {
+     fetchData()
+  }, []);
+
+  const dataFromExpense = (newExpense) => {
+     
+    fetch("http://localhost:5000/createExpense",{
+      method:"POST",
+      body:JSON.stringify(newExpense),
+      headers:{
+        "Content-Type":"application/json"
+      }
+    }).then((res)=>{
+         fetchData()
+    })
+
+
+  };
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NewExpense dataToExpense={dataFromExpense}></NewExpense>
+      <Expenses items={Items} />
     </div>
   );
-}
+};
 
 export default App;
